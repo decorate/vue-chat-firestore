@@ -17,7 +17,7 @@
 
                     <div v-for="m in messages"
                          :class="allocateClass(m.senderId)">
-                        <div v-if="!isHost(m.senderId)">
+                        <div class="line__flex" v-if="!isHost(m.senderId)">
                             <figure>
                                 <img src="images/guest.jpg" />
                             </figure>
@@ -54,7 +54,7 @@
 
                 <transition name="line__icon-box">
                     <div class="line__icon-box" v-show="isFocus">
-                        <div class="line__icon mr-15">
+                        <div class="line__icon mr-15" @click="blur">
                             <i class="fas fa-chevron-circle-right"></i>
                         </div>
                     </div>
@@ -66,9 +66,9 @@
                               :rows="rows"
                               @input="input"
                               @focus="focus"
-                              @blur="blur"></textarea>
+                              ></textarea>
                     </div>
-                    <div class="line__icon mr-15">
+                    <div class="line__icon mr-15" @click="send" :class="{sendable: isSendable}">
                         <i class="fas fa-paper-plane"></i>
                     </div>
                 </div>
@@ -156,11 +156,16 @@
 
                 rows: 1,
 
-                isFocus: false
+                isFocus: false,
             }
         },
 
         computed: {
+            isSendable() {
+                const length = this.value.length
+                const match = (this.value.match(new RegExp(/( |　|\n)/, "g")) || []).length
+                return length !== match && length
+            }
         },
 
         async mounted() {
@@ -208,14 +213,21 @@
             },
 
             async finished() {
+                this.value = ''
                 await this.$nextTick()
-                this.contentHeight()
+                this.blur()
+                setTimeout(async () => {
+                    await this.$nextTick()
+                    this.scrollTop()
 
-                await this.$nextTick()
-                this.scrollTop()
+                    await this.$nextTick()
+                    this.contentHeight()
+                }, 1000)
+
             },
 
             focus() {
+                console.log('djdj1:')
                 this.$refs.footer.style.paddingBottom = '45px'
                 this.$refs.textarea.style.width = '70vw'
                 this.input()
@@ -237,6 +249,18 @@
                 const num = this.value.split("\n").length;
                 return (num < 4) ? num : 4;
             },
+
+            async send() {
+                console.log('send')
+
+                this.messages.push({
+                    message: this.value,
+                    senderId: 2,
+                    receiverId: 1,
+                    read: false,
+                })
+                this.finished()
+            }
 
         }
     }
