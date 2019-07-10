@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-      <vue-chat-firestore></vue-chat-firestore>
+          <vue-chat-firestore></vue-chat-firestore>
   </div>
 </template>
 
@@ -16,23 +16,10 @@
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
+    .demo {
+        /*height: 667px;*/
+        /*width: 375px;*/
+        background: #8b9a7a;
+        margin: 25px auto 0;
+    }
 </style>

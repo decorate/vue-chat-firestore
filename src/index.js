@@ -1,6 +1,6 @@
 import '@babel/polyfill'
 
-import EX from './components/Example'
+import EX from './components/vue-chat-firestore'
 
 export {
     EX,
