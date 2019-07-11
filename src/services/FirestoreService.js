@@ -14,6 +14,7 @@ export default class FirestoreService {
         this.page = 1
         this.complete = false
         this.limit = 15
+        this.query = null
 
         if(window.firebase === undefined) {
             window.firebase = firebase
@@ -38,11 +39,10 @@ export default class FirestoreService {
 
     async getChat(roomId) {
         const data = []
-        const query = await this.getChatDB(roomId)
+        this.query = await this.getChatDB(roomId)
         if(this.page === 1) {
-            await query.orderBy('created_at', 'desc').limit(this.limit).get()
+            await this.query.orderBy('created_at', 'desc').limit(this.limit).get()
                 .then(snap => {
-                    console.log('first')
                     snap.forEach(x => {
                         data.push(x.data())
                     })
@@ -51,10 +51,9 @@ export default class FirestoreService {
 
                 })
         } else {
-            await query.orderBy('created_at', 'desc').limit(this.limit)
+            await this.query.orderBy('created_at', 'desc').limit(this.limit)
                 .startAfter(this.startAfter.data().created_at)
                 .get().then(snap => {
-                    console.log('next')
                     snap.forEach(x => data.push(x.data()))
 
                     this.startAfter = snap.docs[snap.docs.length - 1]
@@ -66,6 +65,10 @@ export default class FirestoreService {
             this.complete = true
         }
         return linq.from(data).select(x => new Chat(x)).orderBy(x => x.createdAt).toArray()
+    }
+
+    async send(chat) {
+        await this.query.add(chat.getPostable())
     }
 
     get isComplete() {

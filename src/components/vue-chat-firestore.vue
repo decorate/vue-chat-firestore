@@ -9,6 +9,12 @@
                 <div class="line__title">
                     vue-chat-firestore
                 </div>
+
+                <transition name="line__alert">
+                    <div v-if="alert" class="line__alert-box">
+                        <p>{{alert}}</p>
+                    </div>
+                </transition>
             </div>
 
             <div  v-infinite-scroll="loadMore"
@@ -89,6 +95,7 @@
 <script>
     import FirestoreService from '../services/FirestoreService'
     import InfiniteScroll from 'vue-infinite-scroll'
+    import Chat from '../models/Chat'
 
     export default {
         name: 'vue-chat-firestore',
@@ -126,25 +133,21 @@
         data() {
             return {
                 messages: [],
-
                 host: 1,
-
                 height: window.innerHeight - (46 * 2),
-
                 value: '',
-
                 rows: 1,
-
                 isFocus: false,
-
                 firestore: new FirestoreService(
                     this.apiKey,
                     this.authDomain,
                     this.projectId,
                     this.chatCollection
                 ),
-
-                busy: false
+                busy: false,
+                roomId: '1_2',
+                fireStoreDispose: null,
+                alert: null
             }
         },
 
@@ -157,40 +160,25 @@
         },
 
         async created() {
-            this.busy = !this.busy
-            this.messages =  await this.firestore.getChat('1_2')
-            this.busy = !this.busy
+            this.watchDB()
         },
 
         async mounted() {
             window.addEventListener('resize', this.contentHeight)
-            this.$refs.content.addEventListener('scroll', this.scrolling)
 
             this.scrollTop()
-
-            setTimeout(async () => {
-                // this.messages.push(
-                // {
-                //     message: 'OK!',
-                //         senderId: 2,
-                //     receiverId: 1,
-                //     read: false,
-                // })
-                // this.finished()
-            }, 3000)
         },
 
         beforeDestroy: function () {
+            this.fireStoreDispose()
             window.removeEventListener('resize', this.contentHeight)
-            this.$refs.content.removeEventListener('scroll', this.scrolling)
         },
 
         methods: {
             async loadMore() {
                 if(this.busy || this.firestore.isComplete) return
-                console.log('load')
                 this.busy = !this.busy
-                const data =  await this.firestore.getChat('1_2')
+                const data =  await this.firestore.getChat(this.roomId)
                 this.messages.unshift(...data)
 
                 await this.$nextTick()
@@ -211,11 +199,6 @@
 
             scrollTop() {
                 this.$refs.content.scrollTo(0, 0)
-            },
-
-            scrolling(e) {
-                //if(this.height * 0.8)
-                //console.log(e.target.scrollTop)
             },
 
             async finished() {
@@ -258,13 +241,44 @@
             async send() {
                 if(!this.isSendable) return
 
-                this.messages.push({
+                const chat = new Chat({
                     message: this.value,
-                    senderId: 2,
-                    receiverId: 1,
+                    senderId: this.host,
+                    receiverId: 2,
                     read: false,
+                    createdAt: new Date()
                 })
+
+                await this.firestore.send(chat)
+
+                await this.messages.push(chat)
                 this.finished()
+            },
+
+            async watchDB() {
+                let snap = true
+                const query = await this.firestore.getChatDB(this.roomId)
+                this.fireStoreDispose = query.orderBy('created_at', 'desc').onSnapshot(snapshot => {
+                    if (snap) {
+                        snap = false
+                        return
+                    }
+
+                    snapshot.docChanges().forEach(async change => {
+                        if(change.type === 'added') {
+                            this.messages.push(new Chat(change.doc.data()))
+
+                            await this.$nextTick()
+                            this.contentHeight()
+
+                            this.alert = change.doc.data().message
+
+                            setTimeout(() => {
+                                this.alert = null
+                            }, 2000)
+                        }
+                    })
+                })
             }
 
         },

@@ -11,8 +11,37 @@ $myTextColor:  #8de055; // 吹き出しの色
 
 /*///////////////////////////////////////////////*/
 
+.line__alert-box {
+  position: absolute;
+  top: 46px;
+  background: rgba(0,0,0,0.8);
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+
+  p {
+    text-align: center;
+    margin: 0 auto;
+    padding: 9px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 .sendable {
   color: #1a64b1;
+}
+
+.line__alert-enter-active, .line__alert-leave-active{
+  top: 46px;
+  opacity: 1;
+  transition: all .5s;
+}
+
+.line__alert-enter, .line__alert-leave-to {
+  opacity: 0;
+  top: 46px;
 }
 
 .line__icon-box-enter-active, .line__icon-box-leave-active{

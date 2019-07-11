@@ -1,7 +1,7 @@
 import Model from '@team-decorate/alcjs'
 
 const FILLABLE = [
-    'message', 'senderId', 'receiverId', 'read'
+    'message', 'senderId', 'receiverId', 'read', 'createdAt'
 ]
 
 export default class Chat extends Model {
