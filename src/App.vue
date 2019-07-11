@@ -1,6 +1,11 @@
 <template>
   <div id="app">
-          <vue-chat-firestore></vue-chat-firestore>
+          <vue-chat-firestore apiKey="AIzaSyDVwUkgNwM9jDTuyQgX_pfQRgYi_scMu3s"
+                              authDomain="localhost"
+                              projectId="tani-match"
+                              chat-collection="dev-tani-match-chats"
+                              receiver-icon="images/guest.jpg"
+          ></vue-chat-firestore>
   </div>
 </template>
 

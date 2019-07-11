@@ -11,15 +11,22 @@
                 </div>
             </div>
 
-            <div ref="content" class="line__contents scroll" :style="{height: height + 'px'}">
+            <div  v-infinite-scroll="loadMore"
+                     infinite-scroll-disabled="busy"
+                     infinite-scroll-distance="450"
+                    ref="content" class="line__contents scroll" :style="{height: height + 'px'}" @click="blur">
 
-                <div class="line_clear-trans">
+                <div ref="trans" class="line_clear-trans">
+
+                    <div v-if="busy" class="line__icon line__loader">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
 
                     <div v-for="m in messages"
                          :class="allocateClass(m.senderId)">
                         <div class="line__flex" v-if="!isHost(m.senderId)">
                             <figure>
-                                <img src="images/guest.jpg" />
+                                <img :src="receiverIcon" />
                             </figure>
                             <div class="line__left-text">
                                 <div class="name">guest</div>
@@ -27,7 +34,7 @@
                             </div>
                         </div>
 
-                        <div v-if="isHost(m.senderId)">
+                        <div class="line__right-text" v-if="isHost(m.senderId)">
                             <div class="text">{{m.message}}</div>
                             <span class="date">既読<br>0:30</span>
                         </div>
@@ -80,73 +87,45 @@
 </template>
 
 <script>
+    import FirestoreService from '../services/FirestoreService'
+    import InfiniteScroll from 'vue-infinite-scroll'
+
     export default {
         name: 'vue-chat-firestore',
 
+        props: {
+            apiKey: {
+                type: String,
+                required: true
+            },
+
+            authDomain: {
+                type: String,
+                required: true
+            },
+
+            projectId: {
+                type: String,
+                required: true
+            },
+
+            chatCollection: {
+                type: String,
+                required: true
+            },
+
+            receiverIcon: {
+                type: String,
+            },
+
+            receiverIcons: {
+                type: Array
+            }
+        },
+
         data() {
             return {
-                messages: [
-                    {
-                        message: '政府間組織または国際政府組織（いずれも略称はIGO）は、主に主権国家（加盟国と呼ばれる）や他の政府間組織で構成される組織である。政府間組織は国際組織とも呼ばれるが、国際組織という用語には',
-                        senderId: 2,
-                        receiverId: 1,
-                        read: false,
-                    },
-                    {
-                        message: '脂瞼は、魚類の眼にみられる半透明の膜で、まぶた状に眼の一部、あるいはほとんど全部を覆っている。真骨魚類のうち、回遊性をもつ浮魚でよくみられる。脂瞼を持つ魚の例として、ボラや、ニシン、サバヒー、そしてサバやアジの仲間などが挙げられる。',
-                        senderId: 1,
-                        receiverId: 2,
-                        read: false,
-                    },
-                    {
-                        message: 'OK!',
-                        senderId: 2,
-                        receiverId: 1,
-                        read: false,
-                    },
-                    {
-                        message: '脂瞼は、魚類の眼にみられる半透明の膜で、まぶた状に眼の一部、あるいはほとんど全部を覆っている。真骨魚類のうち、回遊性をもつ浮魚でよくみられる。脂瞼を持つ魚の例として、ボラや、ニシン、サバヒー、そしてサバやアジの仲間などが挙げられる。',
-                        senderId: 1,
-                        receiverId: 2,
-                        read: false,
-                    },
-                    {
-                        message: '政府間組織または国際政府組織（いずれも略称はIGO）は、主に主権国家（加盟国と呼ばれる）や他の政府間組織で構成される組織である。政府間組織は国際組織とも呼ばれるが、国際組織という用語には',
-                        senderId: 2,
-                        receiverId: 1,
-                        read: false,
-                    },
-                    {
-                        message: '政府間組織または国際政府組織（いずれも略称はIGO）は、主に主権国家（加盟国と呼ばれる）や他の政府間組織で構成される組織である。政府間組織は国際組織とも呼ばれるが、国際組織という用語には',
-                        senderId: 2,
-                        receiverId: 1,
-                        read: false,
-                    },
-                    {
-                        message: '脂瞼は、魚類の眼にみられる半透明の膜で、まぶた状に眼の一部、あるいはほとんど全部を覆っている。真骨魚類のうち、回遊性をもつ浮魚でよくみられる。脂瞼を持つ魚の例として、ボラや、ニシン、サバヒー、そしてサバやアジの仲間などが挙げられる。',
-                        senderId: 1,
-                        receiverId: 2,
-                        read: false,
-                    },
-                    {
-                        message: 'OK!',
-                        senderId: 2,
-                        receiverId: 1,
-                        read: false,
-                    },
-                    {
-                        message: '脂瞼は、魚類の眼にみられる半透明の膜で、まぶた状に眼の一部、あるいはほとんど全部を覆っている。真骨魚類のうち、回遊性をもつ浮魚でよくみられる。脂瞼を持つ魚の例として、ボラや、ニシン、サバヒー、そしてサバやアジの仲間などが挙げられる。',
-                        senderId: 1,
-                        receiverId: 2,
-                        read: false,
-                    },
-                    {
-                        message: '政府間組織または国際政府組織（いずれも略称はIGO）は、主に主権国家（加盟国と呼ばれる）や他の政府間組織で構成される組織である。政府間組織は国際組織とも呼ばれるが、国際組織という用語には',
-                        senderId: 2,
-                        receiverId: 1,
-                        read: false,
-                    },
-                ],
+                messages: [],
 
                 host: 1,
 
@@ -157,6 +136,15 @@
                 rows: 1,
 
                 isFocus: false,
+
+                firestore: new FirestoreService(
+                    this.apiKey,
+                    this.authDomain,
+                    this.projectId,
+                    this.chatCollection
+                ),
+
+                busy: false
             }
         },
 
@@ -166,6 +154,12 @@
                 const match = (this.value.match(new RegExp(/( |　|\n)/, "g")) || []).length
                 return length !== match && length
             }
+        },
+
+        async created() {
+            this.busy = !this.busy
+            this.messages =  await this.firestore.getChat('1_2')
+            this.busy = !this.busy
         },
 
         async mounted() {
@@ -192,6 +186,17 @@
         },
 
         methods: {
+            async loadMore() {
+                if(this.busy || this.firestore.isComplete) return
+                console.log('load')
+                this.busy = !this.busy
+                const data =  await this.firestore.getChat('1_2')
+                this.messages.unshift(...data)
+
+                await this.$nextTick()
+                this.busy = !this.busy
+            },
+
             isHost(senderId) {
                 return this.host === senderId
             },
@@ -209,6 +214,7 @@
             },
 
             scrolling(e) {
+                //if(this.height * 0.8)
                 //console.log(e.target.scrollTop)
             },
 
@@ -227,7 +233,6 @@
             },
 
             focus() {
-                console.log('djdj1:')
                 this.$refs.footer.style.paddingBottom = '45px'
                 this.$refs.textarea.style.width = '70vw'
                 this.input()
@@ -251,7 +256,7 @@
             },
 
             async send() {
-                console.log('send')
+                if(!this.isSendable) return
 
                 this.messages.push({
                     message: this.value,
@@ -262,6 +267,13 @@
                 this.finished()
             }
 
+        },
+
+        components: {
+        },
+
+        directives: {
+            InfiniteScroll
         }
     }
 </script>

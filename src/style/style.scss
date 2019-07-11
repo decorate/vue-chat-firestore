@@ -77,6 +77,10 @@ $myTextColor:  #8de055; // 吹き出しの色
   .line__icon {
     font-size: 1.5rem;
   }
+  
+  .line__loader {
+    text-align: center;
+  }
 
   textarea {
     font-size: 16px;
@@ -91,6 +95,13 @@ $myTextColor:  #8de055; // 吹き出しの色
     align-items: center;
     justify-content: flex-end;
     width: 100%;
+  }
+
+  .line__right-text {
+    display: flex;
+    flex-direction: row-reverse;
+    max-width: 67vw;
+    align-items: flex-end;
   }
 
    /* タイトル部分 */
@@ -125,7 +136,7 @@ $myTextColor:  #8de055; // 吹き出しの色
       width: 100%;
       //position: relative;
       display: flex;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
       max-width: 80%;
       //clear: both;
 
@@ -180,19 +191,21 @@ $myTextColor:  #8de055; // 吹き出しの色
       /* 自分の会話 */
       .line__right {
         position: relative;
-        display: block;
-        margin: 5px 0;
-        max-width: 75%;
-        float: right;
+        //display: block;
+        display: flex;
+        margin: 8px 0;
+        //max-width: 75%;
+        //float: right;
         margin-right: 15px;
-        clear: both;
+        justify-content: flex-end;
+        //clear: both;
         /* コメントエリア */
         .text {
           padding: 10px;
           border-radius: 20px;
           background-color: $myTextColor;
           margin: 0;
-          margin-left: 80px;
+          //margin-left: 120px;
           /* 吹き出し */
           &::after {
             content: '';
@@ -215,15 +228,16 @@ $myTextColor:  #8de055; // 吹き出しの色
         }
         /* 既読エリア */
         .date {
-          content: '';
-          position: absolute;
-          display: block;
-          width: 100px;
-          text-align: right;
-          left: -30px;
-          bottom: 0px;
+          //content: '';
+          //position: relative;
+          //display: block;
+          //width: 100px;
+          //text-align: right;
+          //left: 15px;
+          //bottom: 36px;
           font-size: 80%;
           color: #ffffff;
+          margin-right: 5px;
         }
       }
   }
