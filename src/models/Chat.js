@@ -1,21 +1,40 @@
-import Model from '@team-decorate/alcjs'
+import {Model, ImageUploadable} from '@team-decorate/alcjs'
 
 const FILLABLE = [
-    'message', 'senderId', 'receiverId', 'read', 'createdAt'
+    'message', 'senderId', 'receiverId', 'read', 'createdAt', 'path', 'extension'
 ]
 
-export default class Chat extends Model {
+export default class Chat extends ImageUploadable {
     constructor(data) {
         super()
         this.fillable = FILLABLE
         this.presents = ['senderId', 'receiverId', 'read']
 
         this.message = ''
+        this.path = ''
         this.senderId = 0
         this.receiverId = 0
         this.read = false
+        this.extension = ''
         this.createdAt = null
 
+        this.progress = 0
+
         this.data = data
+    }
+
+    get hasImage() {
+        return this.file || this.path !== ''
+    }
+
+    beforePostable() {
+        super.beforePostable()
+
+        if(this.file) {
+            this.extension = this.file.name.split('.').pop()
+        }
+        if(!this.hasImage) {
+            this.path = ''
+        }
     }
 }

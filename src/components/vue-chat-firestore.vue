@@ -34,13 +34,24 @@
                             <figure>
                                 <img :src="receiverIcon" />
                             </figure>
-                            <div class="line__left-text">
+                            <div v-if="!m.hasImage" class="line__left-text">
                                 <div class="text">{{m.message}}</div>
+                            </div>
+                            <div v-if="m.hasImage" class="line__left-image">
+                                <img :src="m.imageView">
                             </div>
                         </div>
 
-                        <div class="line__right-text" v-if="isHost(m.senderId)">
+                        <div class="line__right-text" v-if="isHost(m.senderId) && !m.hasImage">
                             <div class="text">{{m.message}}</div>
+                            <span class="date">既読<br>0:30</span>
+                        </div>
+
+                        <div class="line__right-image" v-if="isHost(m.senderId) && m.hasImage">
+                            <img :src="m.imageView">
+                            <div class="line__progress-box">
+                                <progress v-if="m.progress" :value="m.progress" max="100"></progress>
+                            </div>
                             <span class="date">既読<br>0:30</span>
                         </div>
                     </div>
@@ -49,7 +60,13 @@
 
             </div>
 
-            <div class="line__footer line__flex line__align-center" ref="footer">
+            <div class="line__footer line__flex" ref="footer">
+                <div v-if="hasFiles" class="line__info-box">
+                    <div class="line__icon mr-15">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <p>{{files.length}}件選択中</p>
+                </div>
                 <transition name="line__icon-box">
                     <div class="line__icon-box" v-show="!isFocus">
                         <div class="line__icon mr-15">
@@ -59,7 +76,10 @@
                             <i class="fas fa-camera"></i>
                         </div>
                         <div class="line__icon mr-15">
-                            <i class="fas fa-image"></i>
+                            <label for="line__image-file">
+                                <i class="fas fa-image"></i>
+                                <input @change="imageSelect" type="file" multiple="multiple" id="line__image-file"/>
+                            </label>
                         </div>
                     </div>
                 </transition>
@@ -95,6 +115,8 @@
     import FirestoreService from '../services/FirestoreService'
     import InfiniteScroll from 'vue-infinite-scroll'
     import Chat from '../models/Chat'
+    import * as FU from '../utility/fileUtility'
+    import ImageService from '../services/ImageService'
 
     export default {
         name: 'vue-chat-firestore',
@@ -159,10 +181,12 @@
                     this.projectId,
                     this.chatCollection
                 ),
+                imageService: new ImageService(),
                 busy: false,
                 fireStoreDispose: null,
                 alert: null,
-                fixedHeight: 46
+                fixedHeight: 46,
+                files: [],
             }
         },
 
@@ -170,7 +194,11 @@
             isSendable() {
                 const length = this.value.length
                 const match = (this.value.match(new RegExp(/( |　|\n)/, "g")) || []).length
-                return length !== match && length
+                return length !== match && length || this.files.length
+            },
+
+            hasFiles() {
+                return this.files.length
             }
         },
 
@@ -219,6 +247,7 @@
 
             async finished() {
                 this.value = ''
+                this.files = []
                 this.blur()
                 setTimeout(async () => {
                     await this.$nextTick()
@@ -256,19 +285,28 @@
             async send() {
                 if(!this.isSendable) return
 
-                const chat = new Chat({
-                    message: this.value,
-                    senderId: this.hostId,
-                    receiverId: this.guestId,
-                    read: false,
-                    createdAt: new Date()
-                })
+                if(this.hasFiles) {
+                    this.imageUpload()
+                    return
+                }
+
+                const chat = this.createSource({message: this.value})
 
                 await this.messages.push(chat)
 
                 await this.firestore.send(chat)
 
                 this.finished()
+            },
+
+            createSource(source = {}) {
+                return new Chat({
+                    senderId: this.hostId,
+                    receiverId: this.guestId,
+                    read: false,
+                    createdAt: new Date(),
+                    ...source
+                })
             },
 
             async watchDB() {
@@ -298,6 +336,41 @@
                         }
                     })
                 })
+            },
+
+            async imageUpload() {
+                this.files
+                    .map(x => {
+                        return {name: x.name, file: x}
+                    })
+                    .map(async x => {
+
+                        const chat = this.createSource({path: '/images/noimage.png'})
+                        chat.filename = x.name
+                        this.messages.push(chat)
+
+                        await this.imageService.put(`images/${x.name}`, x.file, async (path) => {
+                            const ext = x.file.name.split('.').pop()
+                            const chat = this.createSource({path: path, extension: ext})
+
+                            this.messages.map((xs, i) => {
+                                if(xs.filename === x.file.name) {
+                                    this.messages.splice(i, 1)
+                                }
+                            })
+                            this.messages.push(chat)
+                            await this.firestore.send(chat)
+
+                        }, async (val) => {
+                            chat.progress = val
+                        })
+                    })
+
+                this.finished()
+            },
+
+            async imageSelect(e) {
+                FU.getFile(e).select(x => this.files.push(x)).toArray()
             }
 
         },

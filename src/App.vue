@@ -8,7 +8,8 @@
                               :host-id="hostId"
                               :guest-id="guestId"
                               :room-id="roomId"
-          ></vue-chat-firestore>
+          >
+          </vue-chat-firestore>
   </div>
 </template>
 

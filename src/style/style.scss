@@ -11,6 +11,68 @@ $myTextColor:  #8de055; // 吹き出しの色
 
 /*///////////////////////////////////////////////*/
 
+.line__right-image, .line__left-image {
+  position: relative;
+  .line__progress-box {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    top: 50%;
+  }
+  progress {
+    width: 100%;
+  }
+}
+
+.line__info-box {
+  position: absolute;
+  width: 100%;
+  background: #ffffff;
+  left: 0;
+  color: #000;
+  top: -35px;
+  display: flex;
+  align-items: center;
+  padding: 0 15px 0;
+  p {
+    margin: 0 auto;
+    font-weight: bold;
+  }
+}
+
+.line__left-image {
+  margin: 0 0 0 10px;
+  border-radius: 20px;
+  max-height: 45vh;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+  }
+}
+
+.line__right-image {
+  border-radius: 20px;
+  max-height: 45vh;
+  max-width: 68%;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-end;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+  }
+}
+
+#line__image-file {
+  display: none;
+}
+
 .line__alert-box {
   position: absolute;
   top: 46px;
@@ -223,10 +285,9 @@ $myTextColor:  #8de055; // 吹き出しの色
         position: relative;
         //display: block;
         display: flex;
-        margin: 8px 0;
+        margin: 8px 5px 8px 0;
         //max-width: 75%;
         //float: right;
-        margin-right: 15px;
         justify-content: flex-end;
         //clear: both;
         /* コメントエリア */

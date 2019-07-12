@@ -21,7 +21,8 @@ export default class FirestoreService {
             window.firebase.initializeApp({
                 apiKey: key,
                 authDomain: domain,
-                projectId: projectId
+                projectId: projectId,
+                storageBucket: 'tani-match-dev-chat'
             })
 
             window.db = window.firebase.firestore()
