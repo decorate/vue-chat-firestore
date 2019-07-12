@@ -4,7 +4,10 @@
                               authDomain="localhost"
                               projectId="tani-match"
                               chat-collection="dev-tani-match-chats"
-                              receiver-icon="images/guest.jpg"
+                              :receiver-icon="receiverIcon"
+                              :host-id="hostId"
+                              :guest-id="guestId"
+                              :room-id="roomId"
           ></vue-chat-firestore>
   </div>
 </template>
@@ -13,6 +16,22 @@
     import VueChatFirestore from './components/vue-chat-firestore'
 
     export default {
+        data() {
+            return {
+                hostId: 1,
+                guestId: 17,
+                receiverIcon: '',
+                roomId: ''
+            }
+        },
+
+        created() {
+            this.roomId = `${this.hostId}_${this.guestId}`
+            this.hostId = location.search ? 17: 1
+            this.guestId = location.search ? 1: 17
+            this.receiverIcon = location.search ? 'images/host.jpg' : 'images/guest.jpg'
+        },
+
         components: {
             VueChatFirestore
         }

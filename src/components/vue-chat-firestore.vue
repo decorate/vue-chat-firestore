@@ -1,7 +1,7 @@
 <template>
     <div id="_chat-fire">
 
-        <div class="line__container">
+        <div :style="{height: (height + fixedHeight) + 'px'}" class="line__container">
             <div class="line__header line__flex line__align-center" ref="header">
                 <div class="line__icon">
                     <i class="fas fa-angle-left"></i>
@@ -20,7 +20,7 @@
             <div  v-infinite-scroll="loadMore"
                      infinite-scroll-disabled="busy"
                      infinite-scroll-distance="450"
-                    ref="content" class="line__contents scroll" :style="{height: height + 'px'}" @click="blur">
+                    ref="content" class="line__contents scroll" :style="{maxHeight: height + 'px'}" @click="blur">
 
                 <div ref="trans" class="line_clear-trans">
 
@@ -35,7 +35,6 @@
                                 <img :src="receiverIcon" />
                             </figure>
                             <div class="line__left-text">
-                                <div class="name">guest</div>
                                 <div class="text">{{m.message}}</div>
                             </div>
                         </div>
@@ -121,6 +120,23 @@
                 required: true
             },
 
+            hostId: {
+                required: true
+            },
+
+            guestId: {
+                required: true
+            },
+
+            roomId: {
+                required: true
+            },
+
+            isGroup: {
+                type: Boolean,
+                default: false
+            },
+
             receiverIcon: {
                 type: String,
             },
@@ -133,8 +149,7 @@
         data() {
             return {
                 messages: [],
-                host: 1,
-                height: window.innerHeight - (46 * 2),
+                height: 0,
                 value: '',
                 rows: 1,
                 isFocus: false,
@@ -145,9 +160,9 @@
                     this.chatCollection
                 ),
                 busy: false,
-                roomId: '1_2',
                 fireStoreDispose: null,
-                alert: null
+                alert: null,
+                fixedHeight: 46
             }
         },
 
@@ -160,6 +175,7 @@
         },
 
         async created() {
+            this.contentHeight()
             this.watchDB()
         },
 
@@ -186,7 +202,7 @@
             },
 
             isHost(senderId) {
-                return this.host === senderId
+                return this.hostId == senderId
             },
 
             allocateClass(senderId) {
@@ -194,7 +210,7 @@
             },
 
             contentHeight() {
-                this.height = window.innerHeight - (46 * 2)
+                this.height = window.innerHeight - (this.fixedHeight * 2)
             },
 
             scrollTop() {
@@ -203,7 +219,6 @@
 
             async finished() {
                 this.value = ''
-                await this.$nextTick()
                 this.blur()
                 setTimeout(async () => {
                     await this.$nextTick()
@@ -243,15 +258,16 @@
 
                 const chat = new Chat({
                     message: this.value,
-                    senderId: this.host,
-                    receiverId: 2,
+                    senderId: this.hostId,
+                    receiverId: this.guestId,
                     read: false,
                     createdAt: new Date()
                 })
 
+                await this.messages.push(chat)
+
                 await this.firestore.send(chat)
 
-                await this.messages.push(chat)
                 this.finished()
             },
 
@@ -265,13 +281,16 @@
                     }
 
                     snapshot.docChanges().forEach(async change => {
+                        const data = change.doc.data()
+                        if(this.hostId == data.sender_id) return
+
                         if(change.type === 'added') {
-                            this.messages.push(new Chat(change.doc.data()))
+                            this.messages.push(new Chat(data))
 
                             await this.$nextTick()
                             this.contentHeight()
 
-                            this.alert = change.doc.data().message
+                            this.alert = data.message
 
                             setTimeout(() => {
                                 this.alert = null

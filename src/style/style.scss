@@ -131,6 +131,7 @@ $myTextColor:  #8de055; // 吹き出しの色
     flex-direction: row-reverse;
     max-width: 67vw;
     align-items: flex-end;
+    white-space: pre-wrap;
   }
 
    /* タイトル部分 */
