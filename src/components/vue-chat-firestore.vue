@@ -69,18 +69,20 @@
                 </div>
                 <transition name="line__icon-box">
                     <div class="line__icon-box" v-show="!isFocus">
-                        <div class="line__icon mr-15">
-                            <i class="fas fa-plus"></i>
-                        </div>
-                        <div class="line__icon mr-15">
-                            <i class="fas fa-camera"></i>
-                        </div>
+                        <!--<div class="line__icon mr-15">-->
+                            <!--<i class="fas fa-plus"></i>-->
+                        <!--</div>-->
+                        <!--<div class="line__icon mr-15">-->
+                            <!--<i class="fas fa-camera"></i>-->
+                        <!--</div>-->
                         <div class="line__icon mr-15">
                             <label for="line__image-file">
                                 <i class="fas fa-image"></i>
                                 <input @change="imageSelect" type="file" multiple="multiple" id="line__image-file"/>
                             </label>
                         </div>
+
+                        <slot name="icons"></slot>
                     </div>
                 </transition>
 
@@ -211,14 +213,32 @@
             window.addEventListener('resize', this.contentHeight)
 
             this.scrollTop()
+            this.addChildEvent()
         },
 
         beforeDestroy: function () {
             this.fireStoreDispose()
             window.removeEventListener('resize', this.contentHeight)
+            this.removeChildEvent()
         },
 
         methods: {
+            addChildEvent() {
+                this.$slots.icons.forEach(x => {
+                    x.context.$el.addEventListener('click', this.iconClick)
+                })
+            },
+
+            removeChildEvent() {
+                this.$slots.icons.forEach(x => {
+                    x.context.$el.removeEventListener('click', this.iconClick)
+                })
+            },
+
+            iconClick(e) {
+                this.$emit('icon-click', this.firestore)
+            },
+
             async loadMore() {
                 if(this.busy || this.firestore.isComplete) return
                 this.busy = !this.busy
@@ -386,18 +406,4 @@
 
 <style lang="scss">
     @import "../style/style.scss";
-    #_chat-fire {
-        width: 100%;
-        height: 100%;
-
-        ._chat-fire-header {
-            height: 45px;
-            background: #ddd;
-            padding: 0 5px;
-
-            ._chat-fire-header-icon {
-                font-size: 1.7rem;
-            }
-        }
-    }
 </style>

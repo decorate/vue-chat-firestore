@@ -120,7 +120,8 @@ $myTextColor:  #8de055; // 吹き出しの色
 .line__icon-box {
   position: absolute;
   display: flex;
-  overflow: hidden;
+  max-width: 30%;
+  overflow: scroll;
 }
 
 .mr-15 {
@@ -234,17 +235,14 @@ $myTextColor:  #8de055; // 吹き出しの色
 
       /* アイコン画像 */
       figure {
-        width: 50px;
-        //position: absolute;
-        //top: 15px;
-        //left: 0;
         padding: 0;
         margin: 0;
         /* 正方形を用意 */
         img{
           border-radius: 50%;
-          width: 50px;
-          height: 50px;
+          width: 40px;
+          height: 40px;
+          object-fit: cover;
         }
       }
 

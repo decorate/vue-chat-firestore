@@ -1,15 +1,26 @@
 <template>
   <div id="app">
-          <vue-chat-firestore apiKey="AIzaSyDVwUkgNwM9jDTuyQgX_pfQRgYi_scMu3s"
-                              authDomain="localhost"
-                              projectId="tani-match"
-                              chat-collection="dev-tani-match-chats"
-                              :receiver-icon="receiverIcon"
-                              :host-id="hostId"
-                              :guest-id="guestId"
-                              :room-id="roomId"
-          >
-          </vue-chat-firestore>
+      <vue-chat-firestore apiKey="AIzaSyDVwUkgNwM9jDTuyQgX_pfQRgYi_scMu3s"
+                          authDomain="localhost"
+                          projectId="tani-match"
+                          chat-collection="dev-tani-match-chats"
+                          :receiver-icon="receiverIcon"
+                          :host-id="hostId"
+                          :guest-id="guestId"
+                          :room-id="roomId"
+                          @icon-click="test"
+      >
+          <div slot="icons">
+              <div class="line__icon mr-15">
+                  <i class="fas fa-camera"></i>
+              </div>
+          </div>
+          <div slot="icons">
+              <div class="line__icon mr-15">
+                  <i class="fas fa-plus"></i>
+              </div>
+          </div>
+      </vue-chat-firestore>
   </div>
 </template>
 
@@ -31,6 +42,12 @@
             this.hostId = location.search ? 17: 1
             this.guestId = location.search ? 1: 17
             this.receiverIcon = location.search ? 'images/host.jpg' : 'images/guest.jpg'
+        },
+
+        methods: {
+            test(fire) {
+                console.log(fire)
+            }
         },
 
         components: {
