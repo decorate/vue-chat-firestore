@@ -3,7 +3,7 @@
 
         <div :style="{height: (height + fixedHeight) + 'px'}" class="line__container">
             <div class="line__header line__flex line__align-center" ref="header">
-                <div class="line__icon">
+                <div class="line__icon" @click="back">
                     <i class="fas fa-angle-left"></i>
                 </div>
                 <div class="line__title">
@@ -65,7 +65,7 @@
 
             <div class="line__footer line__flex" ref="footer">
                 <div v-if="hasFiles" class="line__info-box">
-                    <div class="line__icon mr-15">
+                    <div @click="closeFilesInfo" class="line__icon mr-15">
                         <i class="fas fa-times"></i>
                     </div>
                     <p>{{files.length}}件選択中</p>
@@ -202,11 +202,11 @@
         },
 
         async created() {
-            this.contentHeight()
             this.watchDB()
         },
 
         async mounted() {
+            this.contentHeight()
             window.addEventListener('resize', this.contentHeight)
 
             this.scrollTop()
@@ -392,6 +392,14 @@
 
             async imageSelect(e) {
                 FU.getFile(e).select(x => this.files.push(x)).toArray()
+            },
+
+            closeFilesInfo() {
+                this.files = []
+            },
+
+            back() {
+                this.$emit('back')
             }
 
         },
