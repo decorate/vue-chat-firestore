@@ -39,7 +39,8 @@
                                 <span class="date">{{m.date}}</span>
                             </div>
                             <div v-if="m.hasImage" class="line__left-image">
-                                <img :src="m.imageView">
+                                <img :src="m.imageView" @click="download(m)">
+                                <span class="date">{{m.date}}</span>
                             </div>
                         </div>
 
@@ -50,7 +51,7 @@
                         </div>
 
                         <div class="line__right-image" v-if="isHost(m.senderId) && m.hasImage">
-                            <img :src="m.imageView">
+                            <img :src="m.imageView" @click="download(m)">
                             <div class="line__progress-box">
                                 <progress v-if="m.progress" :value="m.progress" max="100"></progress>
                             </div>
@@ -115,7 +116,7 @@
     import InfiniteScroll from 'vue-infinite-scroll'
     import Chat from '../models/Chat'
     import * as FU from '../utility/fileUtility'
-    import ImageService from '../services/ImageService'
+    import FileService from '../services/FileService'
 
     export default {
         name: 'vue-chat-firestore',
@@ -180,7 +181,7 @@
                     this.projectId,
                     this.chatCollection
                 ),
-                imageService: new ImageService(),
+                fileService: new FileService(),
                 busy: false,
                 fireStoreDispose: null,
                 alert: null,
@@ -220,6 +221,10 @@
         },
 
         methods: {
+            download(m) {
+                window.open(m.path, '_blank')
+            },
+
             addChildEvent() {
                 if(!this.$slots.icons) return
 
@@ -372,7 +377,7 @@
                         chat.filename = x.name
                         this.messages.push(chat)
 
-                        await this.imageService.put(`images/${x.name}`, x.file, async (path) => {
+                        await this.fileService.put(`images/${x.name}`, x.file, async (path) => {
                             const ext = x.file.name.split('.').pop()
                             const chat = this.createSource({path: path, extension: ext})
 

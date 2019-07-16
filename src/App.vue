@@ -21,7 +21,7 @@
         data() {
             return {
                 hostId: 1,
-                guestId: 2,
+                guestId: 17,
                 receiverIcon: '',
                 roomId: ''
             }
@@ -29,8 +29,8 @@
 
         created() {
             this.roomId = `${this.hostId}_${this.guestId}`
-            this.hostId = location.search ? 2: 1
-            this.guestId = location.search ? 1: 2
+            this.hostId = location.search ? this.guestId: this.hostId
+            this.guestId = location.search ? this.hostId: this.guestId
             this.receiverIcon = location.search ? 'images/host.jpg' : 'images/guest.jpg'
         },
 

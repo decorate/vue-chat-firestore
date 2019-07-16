@@ -44,6 +44,14 @@ $myTextColor:  #8de055; // 吹き出しの色
   margin: 0 0 0 10px;
   border-radius: 20px;
   max-height: 45vh;
+  display: flex;
+  align-items: flex-end;
+
+  .date {
+    font-size: 80%;
+    color: #fff;
+    margin-left: 5px;
+  }
 
   img {
     width: 100%;

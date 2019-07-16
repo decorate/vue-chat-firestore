@@ -1,5 +1,6 @@
 import {Model, ImageUploadable} from '@team-decorate/alcjs'
 import moment from 'moment'
+import FU from '../utility/fileUtility'
 
 const FILLABLE = [
     'message', 'senderId', 'receiverId', 'read', 'createdAt', 'path', 'extension'
@@ -34,6 +35,33 @@ export default class Chat extends ImageUploadable {
 
     get hasImage() {
         return this.file || this.path !== ''
+    }
+
+    get imageView () {
+        if (this.file && this.checkImage()) {
+            fU.bindResult(this.file, (p) => this.blobImage = p)
+            return this.blobImage
+        }
+
+        if(!this.checkImage()) {
+            return this.addFileImage()
+        }
+
+        return this.path
+    }
+
+    checkImage() {
+        return this.extension.match(/(gif|jpg|jpeg|png)/i)
+    }
+
+    addFileImage() {
+        if(this.extension.match(/(pdf)/i)) {
+            return 'images/pdfimg.png'
+        }
+
+        if(this.extension.match(/xls|xlt|xml|xlsx|xlsm|xlsb|xltx|xltm|xlam|xla|xlw|xlr/i)) {
+            return 'images/excelimg.png'
+        }
     }
 
     beforePostable() {
