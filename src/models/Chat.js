@@ -1,4 +1,5 @@
 import {Model, ImageUploadable} from '@team-decorate/alcjs'
+import moment from 'moment'
 
 const FILLABLE = [
     'message', 'senderId', 'receiverId', 'read', 'createdAt', 'path', 'extension'
@@ -21,6 +22,10 @@ export default class Chat extends ImageUploadable {
         this.progress = 0
 
         this.data = data
+    }
+
+    get date() {
+        return moment(this.createdAt.toDate()).format('MM/DD HH:mm')
     }
 
     get hasImage() {

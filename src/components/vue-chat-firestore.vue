@@ -36,6 +36,7 @@
                             </figure>
                             <div v-if="!m.hasImage" class="line__left-text">
                                 <div class="text">{{m.message}}</div>
+                                <span class="date">{{m.date}}</span>
                             </div>
                             <div v-if="m.hasImage" class="line__left-image">
                                 <img :src="m.imageView">
@@ -44,7 +45,8 @@
 
                         <div class="line__right-text" v-if="isHost(m.senderId) && !m.hasImage">
                             <div class="text">{{m.message}}</div>
-                            <span class="date">既読<br>0:30</span>
+                            <!--<span class="date">既読<br>0:30</span>-->
+                            <span class="date">{{m.date}}</span>
                         </div>
 
                         <div class="line__right-image" v-if="isHost(m.senderId) && m.hasImage">
@@ -52,7 +54,8 @@
                             <div class="line__progress-box">
                                 <progress v-if="m.progress" :value="m.progress" max="100"></progress>
                             </div>
-                            <span class="date">既読<br>0:30</span>
+                            <!--<span class="date">既読<br>0:30</span>-->
+                            <span class="date">{{m.date}}</span>
                         </div>
                     </div>
 
@@ -69,12 +72,6 @@
                 </div>
                 <transition name="line__icon-box">
                     <div class="line__icon-box" v-show="!isFocus">
-                        <!--<div class="line__icon mr-15">-->
-                            <!--<i class="fas fa-plus"></i>-->
-                        <!--</div>-->
-                        <!--<div class="line__icon mr-15">-->
-                            <!--<i class="fas fa-camera"></i>-->
-                        <!--</div>-->
                         <div class="line__icon mr-15">
                             <label for="line__image-file">
                                 <i class="fas fa-image"></i>
@@ -224,12 +221,16 @@
 
         methods: {
             addChildEvent() {
+                if(!this.$slots.icons) return
+
                 this.$slots.icons.forEach(x => {
                     x.context.$el.addEventListener('click', this.iconClick)
                 })
             },
 
             removeChildEvent() {
+                if(!this.$slots.icons) return
+
                 this.$slots.icons.forEach(x => {
                     x.context.$el.removeEventListener('click', this.iconClick)
                 })

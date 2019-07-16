@@ -10,16 +10,16 @@
                           :room-id="roomId"
                           @icon-click="test"
       >
-          <div slot="icons">
-              <div class="line__icon mr-15">
-                  <i class="fas fa-camera"></i>
-              </div>
-          </div>
-          <div slot="icons">
-              <div class="line__icon mr-15">
-                  <i class="fas fa-plus"></i>
-              </div>
-          </div>
+          <!--<div slot="icons">-->
+              <!--<div class="line__icon mr-15">-->
+                  <!--<i class="fas fa-camera"></i>-->
+              <!--</div>-->
+          <!--</div>-->
+          <!--<div slot="icons">-->
+              <!--<div class="line__icon mr-15">-->
+                  <!--<i class="fas fa-plus"></i>-->
+              <!--</div>-->
+          <!--</div>-->
       </vue-chat-firestore>
   </div>
 </template>
@@ -31,7 +31,7 @@
         data() {
             return {
                 hostId: 1,
-                guestId: 17,
+                guestId: 2,
                 receiverIcon: '',
                 roomId: ''
             }
@@ -39,8 +39,8 @@
 
         created() {
             this.roomId = `${this.hostId}_${this.guestId}`
-            this.hostId = location.search ? 17: 1
-            this.guestId = location.search ? 1: 17
+            this.hostId = location.search ? 2: 1
+            this.guestId = location.search ? 1: 2
             this.receiverIcon = location.search ? 'images/host.jpg' : 'images/guest.jpg'
         },
 

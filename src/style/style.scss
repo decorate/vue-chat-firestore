@@ -226,7 +226,6 @@ $myTextColor:  #8de055; // 吹き出しの色
 
     /* 相手の会話 */
     .line__left {
-      width: 100%;
       //position: relative;
       display: flex;
       margin-bottom: 8px;
@@ -248,6 +247,14 @@ $myTextColor:  #8de055; // 吹き出しの色
 
       .line__left-text {
         margin-left: 15px;
+        display: flex;
+        align-items: flex-end;
+
+        .date {
+          font-size: 80%;
+          color: #fff;
+          margin-left: 5px;
+        }
 
         .name {
           font-size: 80%;
