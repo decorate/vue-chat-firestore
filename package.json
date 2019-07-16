@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/decorate/vue-searchable.git"
+    "url": "git+https://github.com/decorate/vue-chat-firestore.git"
   },
   "keywords": [
     "vue",

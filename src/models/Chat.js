@@ -25,7 +25,11 @@ export default class Chat extends ImageUploadable {
     }
 
     get date() {
-        return moment(this.createdAt.toDate()).format('MM/DD HH:mm')
+        if(this.createdAt.toDate) {
+            return moment(this.createdAt.toDate()).format('MM/DD HH:mm')
+        }
+
+        return moment(new Date).format('MM/DD HH:mm')
     }
 
     get hasImage() {

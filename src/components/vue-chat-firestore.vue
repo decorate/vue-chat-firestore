@@ -313,7 +313,9 @@
 
                 const chat = this.createSource({message: this.value})
 
-                await this.messages.push(chat)
+                this.messages.push(chat)
+
+                this.blur()
 
                 await this.firestore.send(chat)
 
@@ -415,4 +417,11 @@
 
 <style lang="scss">
     @import "../style/style.scss";
+    #_chat-fire {
+        position: absolute;
+        left: 0;
+        top:0;
+        width: 100%;
+        z-index: 1200;
+    }
 </style>
