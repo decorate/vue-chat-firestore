@@ -61,5 +61,6 @@
   "dependencies": {
     "@team-decorate/alcjs": "^1.1.1",
     "firebase": "^6.2.4"
-  }
+  },
+  "style": "dist/vue-chat-firestore.css"
 }

@@ -62,6 +62,8 @@ export default class Chat extends ImageUploadable {
         if(this.extension.match(/xls|xlt|xml|xlsx|xlsm|xlsb|xltx|xltm|xlam|xla|xlw|xlr/i)) {
             return 'images/excelimg.png'
         }
+
+        return 'images/noimage.png'
     }
 
     beforePostable() {
